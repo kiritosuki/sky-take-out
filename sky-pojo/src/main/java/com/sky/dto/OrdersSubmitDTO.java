@@ -1,13 +1,11 @@
 package com.sky.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
 public class OrdersSubmitDTO implements Serializable {
     //地址簿id
     private Long addressBookId;
@@ -28,4 +26,91 @@ public class OrdersSubmitDTO implements Serializable {
     private Integer packAmount;
     //总金额
     private BigDecimal amount;
+
+    @Override
+    public String toString() {
+        return "OrdersSubmitDTO{" +
+                "addressBookId=" + addressBookId +
+                ", payMethod=" + payMethod +
+                ", remark='" + remark + '\'' +
+                ", estimatedDeliveryTime=" + estimatedDeliveryTime +
+                ", deliveryStatus=" + deliveryStatus +
+                ", tablewareNumber=" + tablewareNumber +
+                ", tablewareStatus=" + tablewareStatus +
+                ", packAmount=" + packAmount +
+                ", amount=" + amount +
+                '}';
+    }
+
+    public Long getAddressBookId() {
+        return addressBookId;
+    }
+
+    public void setAddressBookId(Long addressBookId) {
+        this.addressBookId = addressBookId;
+    }
+
+    public int getPayMethod() {
+        return payMethod;
+    }
+
+    public void setPayMethod(int payMethod) {
+        this.payMethod = payMethod;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public LocalDateTime getEstimatedDeliveryTime() {
+        return estimatedDeliveryTime;
+    }
+
+    public void setEstimatedDeliveryTime(LocalDateTime estimatedDeliveryTime) {
+        this.estimatedDeliveryTime = estimatedDeliveryTime;
+    }
+
+    public Integer getDeliveryStatus() {
+        return deliveryStatus;
+    }
+
+    public void setDeliveryStatus(Integer deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    public Integer getTablewareNumber() {
+        return tablewareNumber;
+    }
+
+    public void setTablewareNumber(Integer tablewareNumber) {
+        this.tablewareNumber = tablewareNumber;
+    }
+
+    public Integer getTablewareStatus() {
+        return tablewareStatus;
+    }
+
+    public void setTablewareStatus(Integer tablewareStatus) {
+        this.tablewareStatus = tablewareStatus;
+    }
+
+    public Integer getPackAmount() {
+        return packAmount;
+    }
+
+    public void setPackAmount(Integer packAmount) {
+        this.packAmount = packAmount;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 }

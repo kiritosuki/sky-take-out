@@ -1,16 +1,8 @@
 package com.sky.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+//@Builder
 public class OrderReportVO implements Serializable {
 
     //日期，以逗号分隔，例如：2022-10-01,2022-10-02,2022-10-03
@@ -31,4 +23,75 @@ public class OrderReportVO implements Serializable {
     //订单完成率
     private Double orderCompletionRate;
 
+    @Override
+    public String toString() {
+        return "OrderReportVO{" +
+                "dateList='" + dateList + '\'' +
+                ", orderCountList='" + orderCountList + '\'' +
+                ", validOrderCountList='" + validOrderCountList + '\'' +
+                ", totalOrderCount=" + totalOrderCount +
+                ", validOrderCount=" + validOrderCount +
+                ", orderCompletionRate=" + orderCompletionRate +
+                '}';
+    }
+
+    public String getDateList() {
+        return dateList;
+    }
+
+    public void setDateList(String dateList) {
+        this.dateList = dateList;
+    }
+
+    public String getOrderCountList() {
+        return orderCountList;
+    }
+
+    public void setOrderCountList(String orderCountList) {
+        this.orderCountList = orderCountList;
+    }
+
+    public String getValidOrderCountList() {
+        return validOrderCountList;
+    }
+
+    public void setValidOrderCountList(String validOrderCountList) {
+        this.validOrderCountList = validOrderCountList;
+    }
+
+    public Integer getTotalOrderCount() {
+        return totalOrderCount;
+    }
+
+    public void setTotalOrderCount(Integer totalOrderCount) {
+        this.totalOrderCount = totalOrderCount;
+    }
+
+    public Integer getValidOrderCount() {
+        return validOrderCount;
+    }
+
+    public void setValidOrderCount(Integer validOrderCount) {
+        this.validOrderCount = validOrderCount;
+    }
+
+    public Double getOrderCompletionRate() {
+        return orderCompletionRate;
+    }
+
+    public void setOrderCompletionRate(Double orderCompletionRate) {
+        this.orderCompletionRate = orderCompletionRate;
+    }
+
+    public OrderReportVO() {
+    }
+
+    public OrderReportVO(String dateList, String orderCountList, String validOrderCountList, Integer totalOrderCount, Integer validOrderCount, Double orderCompletionRate) {
+        this.dateList = dateList;
+        this.orderCountList = orderCountList;
+        this.validOrderCountList = validOrderCountList;
+        this.totalOrderCount = totalOrderCount;
+        this.validOrderCount = validOrderCount;
+        this.orderCompletionRate = orderCompletionRate;
+    }
 }
