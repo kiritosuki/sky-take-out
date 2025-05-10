@@ -30,4 +30,18 @@ public interface EmployeeMapper {
      * @return
      */
     Page<Employee> selectPage(String name);
+
+    /**
+     * 员工信息更新
+     * @param employee
+     */
+    void update(Employee employee);
+
+    /**
+     * 根据id查询员工
+     * @param id
+     * @return
+     */
+    @Select("select * from sky_take_out.employee e where e.id = #{id}")
+    Employee selectById(Long id);
 }
