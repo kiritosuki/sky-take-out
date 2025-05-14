@@ -14,6 +14,7 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetMealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
+import com.sky.vo.DishVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,7 @@ public class DishServiceImpl implements DishService {
     @Override
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
-        Page<Dish> page = dishMapper.selectPage(dishPageQueryDTO);
+        Page<DishVO> page = dishMapper.selectPage(dishPageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
     }
 
@@ -89,5 +90,20 @@ public class DishServiceImpl implements DishService {
         dishFlavorMapper.deleteByDishIds(ids);
         //删除菜品
         dishMapper.deleteByIds(ids);
+    }
+
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getWithFlavorsById(Long id) {
+        //根据id查询菜品及其分类名称
+        DishVO dishVO = dishMapper.selectWithCategoryNameById(id);
+        //根据菜品id查询口味
+        List<DishFlavor> dishFlavorList = dishFlavorMapper.selectByDishId(id);
+        dishVO.setFlavors(dishFlavorList);
+        return dishVO;
     }
 }

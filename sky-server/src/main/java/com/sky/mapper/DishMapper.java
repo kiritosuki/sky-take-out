@@ -5,6 +5,7 @@ import com.sky.annotation.AutoFill;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -38,7 +39,7 @@ public interface DishMapper {
      * @param dishPageQueryDTO
      * @return
      */
-    Page<Dish> selectPage(DishPageQueryDTO dishPageQueryDTO);
+    Page<DishVO> selectPage(DishPageQueryDTO dishPageQueryDTO);
 
     /**
      * 根据ids查询菜品的起售状态
@@ -52,4 +53,12 @@ public interface DishMapper {
      * @param ids
      */
     void deleteByIds(List<Long> ids);
+
+    /**
+     * 根据id查询菜品及其分类名称
+     * @return
+     */
+    @Select("select d.*, c.name categoryName from dish d left outer join category c on d.category_id = c.id where d.id = #{id}")
+    DishVO selectWithCategoryNameById(Long id);
+
 }

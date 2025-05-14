@@ -4,7 +4,7 @@
 <mapper namespace="com.sky.mapper.DishMapper">
 
     <!--    菜品分页查询-->
-    <select id="selectPage" resultType="com.sky.entity.Dish">
+    <select id="selectPage" resultType="com.sky.vo.DishVO">
         select d.*, c.name categoryName from sky_take_out.dish d left outer join sky_take_out.category c
                                         on d.category_id = c.id
         <where>
