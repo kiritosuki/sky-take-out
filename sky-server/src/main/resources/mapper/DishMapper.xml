@@ -36,4 +36,30 @@
             #{id}
         </foreach>
     </delete>
+    
+<!--    修改菜品基本信息-->
+    <update id="update">
+        update sky_take_out.dish d
+        <set>
+            <if test="categoryId != null">
+                d.category_id = #{categoryId},
+            </if>
+            <if test="description != null">
+                d.description = #{description},
+            </if>
+            <if test="image != null and image != ''">
+                d.image = #{image},
+            </if>
+            <if test="name != null and name != ''">
+                d.name = #{name},
+            </if>
+            <if test="price != null">
+                d.price = #{price},
+            </if>
+            <if test="status != null">
+                d.status = #{status}
+            </if>
+        </set>
+        where d.id = #{id}
+    </update>
 </mapper>

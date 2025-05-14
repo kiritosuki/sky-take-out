@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
+import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
@@ -61,4 +62,10 @@ public interface DishMapper {
     @Select("select d.*, c.name categoryName from dish d left outer join category c on d.category_id = c.id where d.id = #{id}")
     DishVO selectWithCategoryNameById(Long id);
 
+    /**
+     * 修改菜品基本信息
+     * @param dish
+     */
+    @AutoFill(OperationType.UPDATE)
+    void update(Dish dish);
 }

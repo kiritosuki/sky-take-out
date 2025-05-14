@@ -101,4 +101,5 @@ public class DishDTO implements Serializable {
     public void setFlavors(List<DishFlavor> flavors) {
         this.flavors = flavors;
     }
+
 }
