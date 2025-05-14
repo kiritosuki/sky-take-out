@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishMapper">
+
+    <!--    菜品分页查询-->
+    <select id="selectPage" resultType="com.sky.entity.Dish">
+        select d.*, c.name categoryName from sky_take_out.dish d left outer join sky_take_out.category c
+                                        on d.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                d.name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and d.status = #{status}
+            </if>
+        </where>
+        order by update_time desc
+    </select>
+
+<!--    根据ids查询菜品起售状态-->
+    <select id="selectStatusByIds" resultType="java.lang.Integer">
+        select status from sky_take_out.dish d where d.id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+<!--    根据ids删除菜品-->
+    <delete id="deleteByIds">
+        delete from sky_take_out.dish where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
