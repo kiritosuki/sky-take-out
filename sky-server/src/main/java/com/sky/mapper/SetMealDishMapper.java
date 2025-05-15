@@ -15,4 +15,9 @@ public interface SetMealDishMapper {
      */
     List<SetmealDish> selectByDishIds(List<Long> dishIds);
 
+    /**
+     * 新增菜品与套餐的关联关系
+     * @param setmealDishList
+     */
+    void insertBatch(List<SetmealDish> setmealDishList);
 }
