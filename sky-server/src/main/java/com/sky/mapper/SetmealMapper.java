@@ -6,10 +6,9 @@ import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.SetmealVO;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface SetmealMapper {
@@ -26,8 +25,8 @@ public interface SetmealMapper {
      * 新增套餐
      * @param setmeal
      */
-    @Insert("insert into sky_take_out.setmeal (category_id, name, price, description, image, create_time, update_time, create_user, update_user) " +
-            "value (#{categoryId}, #{name}, #{price}, #{description}, #{image}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+    @Insert("insert into sky_take_out.setmeal (category_id, name, price, status, description, image, create_time, update_time, create_user, update_user) " +
+            "value (#{categoryId}, #{name}, #{price}, #{status}, #{description}, #{image}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
     @AutoFill(OperationType.INSERT)
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(Setmeal setmeal);
@@ -38,4 +37,10 @@ public interface SetmealMapper {
      * @return
      */
     Page<SetmealVO> selectPage(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    /**
+     * 批量删除套餐
+     * @param ids
+     */
+    void deleteByIds(List<Long> ids);
 }

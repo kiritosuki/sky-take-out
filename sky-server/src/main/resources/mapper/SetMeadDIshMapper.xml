@@ -19,4 +19,11 @@
         </foreach>
     </insert>
 
+<!--    删除套餐下的菜品-->
+    <delete id="deleteBySetmealIds">
+        delete from sky_take_out.setmeal_dish sd where sd.setmeal_id in
+            <foreach collection="setmealIds" item="setmealId" open="(" close=")" separator=",">
+                #{setmealId}
+            </foreach>
+    </delete>
 </mapper>
