@@ -20,7 +20,8 @@
         order by s.update_time desc
     </select>
 
-<!--    批量删除套餐-->
+
+    <!--    批量删除套餐-->
     <delete id="deleteByIds">
         delete from sky_take_out.setmeal s where s.id in
         <foreach collection="ids" item="id" separator="," open="(" close=")">
@@ -53,4 +54,20 @@
         where s.id = #{id}
         </set>
     </update>
+
+<!--    根据ids停售套餐-->
+    <update id="stopByIds">
+        update sky_take_out.setmeal s set s.status = 0 where s.id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+    </update>
+
+    <!--    根据ids查询套餐起售状态-->
+    <select id="selectStatusByIds" resultType="java.lang.Integer">
+        select status from sky_take_out.setmeal where id in
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </select>
 </mapper>

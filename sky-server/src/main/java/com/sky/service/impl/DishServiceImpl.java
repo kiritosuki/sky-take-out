@@ -12,6 +12,7 @@ import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetMealDishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,6 +32,8 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetMealDishMapper setMealDishMapper;
+    @Autowired
+    private SetmealMapper setmealMapper;
 
     /**
      * 新增菜品
@@ -146,6 +150,17 @@ public class DishServiceImpl implements DishService {
         dish.setStatus(status);
         dish.setId(id);
         dishMapper.update(dish);
+        //如果菜品停售 则该菜品关联的套餐停售
+        if(status == 0){
+            List<Long> dishIds = new ArrayList<>();
+            dishIds.add(id);
+            List<SetmealDish> setmealDishList = setMealDishMapper.selectByDishIds(dishIds);
+            List<Long> setmealIds = new ArrayList<>();
+            setmealDishList.forEach(setmealDish -> {
+                setmealIds.add(setmealDish.getSetmealId());
+            });
+            setmealMapper.stopByIds(setmealIds);
+        }
     }
 
     /**

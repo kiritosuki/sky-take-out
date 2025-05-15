@@ -52,4 +52,8 @@ public interface SetmealMapper {
 
     @Select("select s.*, c.name categoryName from setmeal s left outer join category c on s.category_id = c.id where s.id = #{id}")
     SetmealVO selectById(Long id);
+
+    List<Integer> selectStatusByIds(List<Long> ids);
+
+    void stopByIds(List<Long> ids);
 }
