@@ -26,4 +26,7 @@ public interface SetMealDishMapper {
      * @param setmealIds
      */
     void deleteBySetmealIds(List<Long> setmealIds);
+
+    @Select("select * from sky_take_out.setmeal_dish where setmeal_id = #{id}")
+    List<SetmealDish> selectBySetmealId(Long id);
 }

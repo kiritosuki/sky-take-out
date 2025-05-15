@@ -27,4 +27,30 @@
             #{id}
         </foreach>
     </delete>
+
+<!--    修改套餐-->
+    <update id="update">
+        update sky_take_out.setmeal s
+        <set>
+            <if test="categoryId != null">
+                s.category_id = #{categoryId},
+            </if>
+            <if test="description != null">
+                s.description = #{description},
+            </if>
+            <if test="image != null and image != ''">
+                s.image = #{image},
+            </if>
+            <if test="name != null and name != ''">
+                s.name = #{name},
+            </if>
+            <if test="price != null">
+                s.price = #{price},
+            </if>
+            <if test="status != null">
+                s.status = #{status}
+            </if>
+        where s.id = #{id}
+        </set>
+    </update>
 </mapper>
