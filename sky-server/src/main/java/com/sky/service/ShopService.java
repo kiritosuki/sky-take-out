@@ -6,4 +6,11 @@ public interface ShopService {
      * @param status
      */
     void setShopStatus(Integer status);
+
+    /**
+     * 获取店铺营业状态
+     * @return
+     */
+    Integer getShopStatus();
+
 }

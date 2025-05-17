@@ -22,4 +22,11 @@ public class ShopServiceImpl implements ShopService {
         ValueOperations<String, Object> redisForValue = redisTemplate.opsForValue();
         redisForValue.set(KEY, status);
     }
+
+    @Override
+    public Integer getShopStatus() {
+        ValueOperations<String, Object> redisForValue = redisTemplate.opsForValue();
+        Integer status = (Integer) redisForValue.get(KEY);
+        return status;
+    }
 }
