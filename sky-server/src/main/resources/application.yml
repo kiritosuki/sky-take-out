@@ -42,6 +42,12 @@ sky:
     admin-ttl: 72000000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+    # 设置jwt签名加密时使用的秘钥
+    user-secret-key: castit
+    # 设置jwt过期时间
+    user-ttl: 72000000
+    # 设置前端传递过来的令牌名称
+    user-token-name: authentication
   aliyun:
     oss:
       endpoint: ${sky.aliyun.oss.endpoint}
@@ -49,3 +55,6 @@ sky:
       region: ${sky.aliyun.oss.region}
       access-key-id: ${sky.aliyun.oss.access-key-id}
       access-key-secret: ${sky.aliyun.oss.access-key-secret}
+  wechat:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}

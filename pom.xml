@@ -34,9 +34,16 @@
         <jjwt>0.9.1</jjwt>
 <!--        <jaxb-api>2.3.1</jaxb-api>-->
         <poi>3.16</poi>
+        <httpclient>4.5.13</httpclient>
     </properties>
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.aliyun.oss</groupId>
@@ -49,6 +56,7 @@
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb.api}</version>
             </dependency>
+
             <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>

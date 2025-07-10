@@ -12,7 +12,6 @@ import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,4 +141,16 @@ public class EmployeeController {
         return Result.success();
     }
 
+    /**
+     * 修改当前员工密码
+     * @param passwordEditDTO
+     * @return
+     */
+    @PutMapping("/editPassword")
+    public Result editPassword(@RequestBody PasswordEditDTO passwordEditDTO){
+        log.info("修改员工密码-旧密码: {}", passwordEditDTO.getOldPassword());
+        employeeService.editPassword(passwordEditDTO);
+        log.info("修改密码成功-新密码: {}", passwordEditDTO.getNewPassword());
+        return Result.success();
+    }
 }
