@@ -28,8 +28,23 @@
             #{id}
         </foreach>
     </select>
+    <select id="list" resultType="com.sky.entity.Dish">
+        select * from sky_take_out.dish
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%', #{name}, '%')
+            </if>
+        <if test="categoryId != null">
+            and category_id = #{categoryId}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        </where>
+        order by create_time desc
+    </select>
 
-<!--    根据ids删除菜品-->
+    <!--    根据ids删除菜品-->
     <delete id="deleteByIds">
         delete from sky_take_out.dish where id in
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
