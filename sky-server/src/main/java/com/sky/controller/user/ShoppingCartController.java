@@ -52,4 +52,15 @@ public class ShoppingCartController {
         shoppingCartService.delete(shoppingCartDTO);
         return Result.success();
     }
+
+    /**
+     * 清空购车车
+     * @return
+     */
+    @DeleteMapping("/clean")
+    public Result clean(){
+        log.info("清空购物车");
+        shoppingCartService.clean();
+        return Result.success();
+    }
 }

@@ -97,4 +97,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             shoppingCartMapper.updateNumberById(deleted);
         }
     }
+
+    /**
+     * 清空购物车
+     */
+    @Override
+    public void clean() {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+        List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
+        if(shoppingCartList != null && !shoppingCartList.isEmpty()){
+            shoppingCartMapper.cleanByUserId(BaseContext.getCurrentId());
+        }
+    }
 }
