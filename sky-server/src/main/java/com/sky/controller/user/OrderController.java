@@ -6,6 +6,7 @@ import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,5 +59,17 @@ public class OrderController {
         log.info("历史订单查询");
         PageResult pageResult = orderService.listOrders(page, pageSize, status);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 根据订单id查询订单详细信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/orderDetail/{id}")
+    public Result<OrderVO> orderDetail(@PathVariable("id") Long id){
+        log.info("查询订单: {}", id);
+        OrderVO orderVO = orderService.orderDetail(id);
+        return Result.success(orderVO);
     }
 }
