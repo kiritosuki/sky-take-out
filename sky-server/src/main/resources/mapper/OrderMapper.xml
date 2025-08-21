@@ -50,10 +50,10 @@
         select o.* from orders o
         <where>
             <if test="number != null and number != ''">
-                o.number = #{number}
+                o.number like concat('%', #{number}, '%')
             </if>
             <if test="phone != null and phone != ''">
-                and o.phone = #{phone}
+                and o.phone like concat('%', #{phone}, '%')
             </if>
             <if test="status != null">
                 and o.status = #{status}
