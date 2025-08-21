@@ -171,6 +171,7 @@ public class OrderServiceImpl implements OrderService {
      * @param id
      */
     @Override
+    @Transactional
     public void cancelOrder(Long id) {
         Orders order = orderMapper.getById(id);
         if(order == null){
@@ -186,5 +187,23 @@ public class OrderServiceImpl implements OrderService {
         order.setCancelReason("用户取消订单");
         order.setCancelTime(LocalDateTime.now());
         orderMapper.update(order);
+    }
+
+    /**
+     * 再来一单
+     * @param id
+     */
+    @Override
+    public void repetition(Long id) {
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        List<ShoppingCart> shoppingCartList = new ArrayList<>();
+        for(OrderDetail orderDetail : orderDetailList) {
+            ShoppingCart cart = new ShoppingCart();
+            BeanUtils.copyProperties(orderDetail, cart);
+            cart.setUserId(BaseContext.getCurrentId());
+            cart.setCreateTime(LocalDateTime.now());
+            shoppingCartList.add(cart);
+        }
+        shoppingCartMapper.insertBatch(shoppingCartList);
     }
 }
