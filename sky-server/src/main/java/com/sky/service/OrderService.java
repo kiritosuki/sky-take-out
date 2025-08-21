@@ -1,6 +1,8 @@
 package com.sky.service;
 
+import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.result.PageResult;
 import com.sky.vo.OrderSubmitVO;
 
 public interface OrderService {
@@ -10,4 +12,19 @@ public interface OrderService {
      * @return
      */
     OrderSubmitVO submit(OrdersSubmitDTO ordersSubmitDTO);
+
+    /**
+     * 跳过微信支付
+     * @param ordersPaymentDTO
+     */
+    void payment(OrdersPaymentDTO ordersPaymentDTO);
+
+    /**
+     * 历史订单查询
+     * @param page
+     * @param pageSize
+     * @param status
+     * @return
+     */
+    PageResult listOrders(Integer page, Integer pageSize, Integer status);
 }

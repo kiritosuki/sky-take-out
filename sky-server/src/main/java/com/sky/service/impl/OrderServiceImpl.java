@@ -1,20 +1,27 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
+import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.entity.ShoppingCart;
 import com.sky.exception.AddressBookBusinessException;
+import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,5 +97,55 @@ public class OrderServiceImpl implements OrderService {
         orderSubmitVO.setOrderAmount(orders.getAmount());
         orderSubmitVO.setOrderTime(orders.getOrderTime());
         return orderSubmitVO;
+    }
+
+    /**
+     * 跳过微信支付
+     * @param ordersPaymentDTO
+     */
+    @Override
+    @Transactional
+    public void payment(OrdersPaymentDTO ordersPaymentDTO) {
+        Long userId = BaseContext.getCurrentId();
+        String orderNumber = ordersPaymentDTO.getOrderNumber();
+        Orders orders = orderMapper.getByUserIdAndOrderNumber(userId, orderNumber);
+        if(orders == null){
+            throw new OrderBusinessException("订单不存在");
+        }
+        //默认支付成功
+        orders.setStatus(Orders.TO_BE_CONFIRMED);//待接单
+        orders.setPayStatus(Orders.PAID);//已付款
+        orders.setCheckoutTime(LocalDateTime.now());
+        //更新数据库订单状态
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 历史订单查询
+     * @param page
+     * @param pageSize
+     * @param status
+     * @return
+     */
+    @Override
+    public PageResult listOrders(Integer page, Integer pageSize, Integer status) {
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
+        ordersPageQueryDTO.setStatus(status);
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
+        //分页查询
+        PageHelper.startPage(page, pageSize);
+        Page<Orders> orderPage = orderMapper.list(ordersPageQueryDTO);
+        //构建结果
+        List<OrderVO> orderVOList = new ArrayList<>();
+        if(orderPage != null && !orderPage.isEmpty()){
+            for(Orders order : orderPage){
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(order, orderVO);
+                List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(order.getId());
+                orderVO.setOrderDetailList(orderDetailList);
+                orderVOList.add(orderVO);
+            }
+        }
+        return new PageResult(orderPage.getTotal(), orderVOList);
     }
 }
