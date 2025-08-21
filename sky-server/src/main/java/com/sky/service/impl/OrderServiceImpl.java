@@ -128,6 +128,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
+    @Transactional
     public PageResult listOrders(Integer page, Integer pageSize, Integer status) {
         OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
         ordersPageQueryDTO.setStatus(status);
@@ -155,6 +156,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
+    @Transactional
     public OrderVO orderDetail(Long id) {
         OrderVO orderVO = new OrderVO();
         Orders orders = orderMapper.getById(id);
@@ -162,5 +164,27 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
         orderVO.setOrderDetailList(orderDetailList);
         return orderVO;
+    }
+
+    /**
+     * 取消订单
+     * @param id
+     */
+    @Override
+    public void cancelOrder(Long id) {
+        Orders order = orderMapper.getById(id);
+        if(order == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        if(order.getStatus() > 2){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        //跳过退款 更新订单状态
+        order.setPayStatus(Orders.REFUND);
+        order.setStatus(Orders.CANCELLED);
+        order.setCancelReason("用户取消订单");
+        order.setCancelTime(LocalDateTime.now());
+        orderMapper.update(order);
     }
 }
