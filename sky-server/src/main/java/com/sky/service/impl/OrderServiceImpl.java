@@ -1,5 +1,8 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -18,6 +21,7 @@ import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.utils.HttpClientUtil;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
@@ -25,13 +29,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +53,13 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetailMapper orderDetailMapper;
 
     private final static Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+
+    @Value("${sky.shop.address}")
+    private String shopAddress;
+    @Value("${sky.tencent.key}")
+    private String key;
+    @Value("${sky.tencent.secretKey}")
+    private String secretKey;
 
     /**
      * 用户下单
@@ -70,6 +84,8 @@ public class OrderServiceImpl implements OrderService {
             //购物车为空
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
+        //检查收货地址是否超出配送范围
+        checkOutOfRange(addressBook.getCityName() + addressBook.getDistrictName() +addressBook.getDetail());
         //构造订单数据
         Orders orders = new Orders();
         BeanUtils.copyProperties(ordersSubmitDTO, orders);
@@ -414,5 +430,105 @@ public class OrderServiceImpl implements OrderService {
 
         // 将该订单对应的所有菜品信息拼接在一起
         return String.join("", orderDishList);
+    }
+
+    /**
+     * 检查是否超出配送范围
+     * @param address
+     */
+    public void checkOutOfRange(String address){
+        HashMap<String, String> shopLocation = getLocation(shopAddress);
+        HashMap<String, String> targetLocation = getLocation(address);
+        String from = shopLocation.get("lat") + "," + shopLocation.get("lng");
+        String to = targetLocation.get("lat") + "," + targetLocation.get("lng");
+        double distance = getDistance(from, to);
+        if(distance > 5000){
+            throw new OrderBusinessException("超出配送范围");
+        }
+    }
+
+    /**
+     * 根据地址获取经纬度map
+     * @param address
+     * @return
+     */
+    public HashMap<String, String> getLocation(String address){
+        //封装请求参数
+        HashMap<String, String> map = new HashMap<>();
+        map.put("key", key);
+        map.put("address", address);
+        map.put("output", "json");
+        String sig = getSig("/ws/geocoder/v1", map);
+        String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
+        map.put("address", encodedAddress);
+        map.put("sig", sig);
+        //发送请求 得到响应体
+        String result = HttpClientUtil.doGet("https://apis.map.qq.com/ws/geocoder/v1", map);
+        JSONObject jsonResult = JSON.parseObject(result);
+        if(jsonResult.getInteger("status") != 0){
+            throw new OrderBusinessException("获取地址失败");
+        }
+        JSONObject location = jsonResult.getJSONObject("result").getJSONObject("location");
+        String lat = location.getString("lat");
+        String lng = location.getString("lng");
+        HashMap<String, String> resultMap = new HashMap<>();
+        resultMap.put("lat", lat);
+        resultMap.put("lng", lng);
+        return resultMap;
+    }
+
+    /**
+     * 计算距离 单位: 米
+     * from/to: 格式-纬度,经度
+     * @param from
+     * @param to
+     * @return
+     */
+    public double getDistance(String from, String to){
+        HashMap<String, String> map = new HashMap<>();
+        map.put("key", key);
+        map.put("from", from);
+        map.put("to", to);
+        map.put("output", "json");
+        String sig = getSig("/ws/direction/v1/ebicycling", map);
+        String encodedFrom = URLEncoder.encode(from, StandardCharsets.UTF_8);
+        String encodedTo = URLEncoder.encode(to, StandardCharsets.UTF_8);
+        map.put("from", encodedFrom);
+        map.put("to", encodedTo);
+        map.put("sig", sig);
+        String result = HttpClientUtil.doGet("https://apis.map.qq.com/ws/direction/v1/ebicycling", map);
+        JSONObject jsonResult = JSON.parseObject(result);
+        if(jsonResult.getInteger("status") != 0){
+            throw new OrderBusinessException("计算路线失败");
+        }
+        JSONArray routeArray = jsonResult.getJSONObject("result").getJSONArray("routes");
+        if(routeArray == null || routeArray.isEmpty()){
+            throw new OrderBusinessException("无可用的路线");
+        }
+        JSONObject route = routeArray.getJSONObject(0);
+        return route.getDouble("distance");
+    }
+
+    /**
+     * 获取sig签名
+     * @param uri
+     * @param map
+     * @return
+     */
+    public String getSig(String uri, HashMap<String, String> map){
+        List<Map.Entry<String, String>> entryList = new ArrayList<>(map.entrySet());
+        entryList.sort((o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+        StringBuilder sb = new StringBuilder(uri + "?");
+        for(Map.Entry<String, String> entry : entryList){
+            sb.append(entry.getKey())
+                    .append("=")
+                    .append(entry.getValue())
+                    .append("&");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(secretKey);
+        String str = sb.toString();
+        String sig = DigestUtils.md5DigestAsHex(str.getBytes(StandardCharsets.UTF_8));
+        return sig;
     }
 }

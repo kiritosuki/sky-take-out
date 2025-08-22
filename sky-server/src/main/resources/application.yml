@@ -58,3 +58,8 @@ sky:
   wechat:
     appid: ${sky.wechat.appid}
     secret: ${sky.wechat.secret}
+  shop:
+    address: 四川省成都市成华区电子科技大学沙河校区
+  tencent:
+    key: P5ABZ-X3734-CBBUV-K3XJ2-N2X6K-VZF3S
+    secretKey: 2ZAxJtZeAINwV6TXp9VsPXb3puVfwEVf
