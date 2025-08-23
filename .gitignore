@@ -5,3 +5,9 @@
 *Test.java
 **/test/
 /sky-server/src/main/resources/application-dev.yml
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
