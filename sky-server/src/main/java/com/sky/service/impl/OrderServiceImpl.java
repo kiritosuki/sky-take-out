@@ -25,6 +25,7 @@ import com.sky.utils.HttpClientUtil;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -51,6 +52,8 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCartMapper shoppingCartMapper;
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     private final static Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
@@ -139,6 +142,12 @@ public class OrderServiceImpl implements OrderService {
         orders.setCheckoutTime(LocalDateTime.now());
         //更新数据库订单状态
         orderMapper.update(orders);
+        Map<String, Object> map = new HashMap<>();
+        map.put("tpye", 1); //1表示来单提醒
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号: " + orderNumber);
+        //通过websocket 向客户端浏览器推送信息
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 
     /**
@@ -418,7 +427,7 @@ public class OrderServiceImpl implements OrderService {
      * @param orders
      * @return
      */
-    public String getOrderDishesStr(Orders orders) {
+    private String getOrderDishesStr(Orders orders) {
         // 查询订单菜品详情信息（订单中的菜品和数量）
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
 
@@ -436,7 +445,7 @@ public class OrderServiceImpl implements OrderService {
      * 检查是否超出配送范围
      * @param address
      */
-    public void checkOutOfRange(String address){
+    private void checkOutOfRange(String address){
         HashMap<String, String> shopLocation = getLocation(shopAddress);
         HashMap<String, String> targetLocation = getLocation(address);
         String from = shopLocation.get("lat") + "," + shopLocation.get("lng");
@@ -452,7 +461,7 @@ public class OrderServiceImpl implements OrderService {
      * @param address
      * @return
      */
-    public HashMap<String, String> getLocation(String address){
+    private HashMap<String, String> getLocation(String address){
         //封装请求参数
         HashMap<String, String> map = new HashMap<>();
         map.put("key", key);
@@ -484,7 +493,7 @@ public class OrderServiceImpl implements OrderService {
      * @param to
      * @return
      */
-    public double getDistance(String from, String to){
+    private double getDistance(String from, String to){
         HashMap<String, String> map = new HashMap<>();
         map.put("key", key);
         map.put("from", from);
@@ -515,7 +524,7 @@ public class OrderServiceImpl implements OrderService {
      * @param map
      * @return
      */
-    public String getSig(String uri, HashMap<String, String> map){
+    private String getSig(String uri, HashMap<String, String> map){
         List<Map.Entry<String, String>> entryList = new ArrayList<>(map.entrySet());
         entryList.sort((o1, o2) -> o1.getKey().compareTo(o2.getKey()));
         StringBuilder sb = new StringBuilder(uri + "?");
