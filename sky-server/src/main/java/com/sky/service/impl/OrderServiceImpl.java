@@ -142,6 +142,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setCheckoutTime(LocalDateTime.now());
         //更新数据库订单状态
         orderMapper.update(orders);
+        //来单提醒
         Map<String, Object> map = new HashMap<>();
         map.put("tpye", 1); //1表示来单提醒
         map.put("orderId", orders.getId());
@@ -396,13 +397,30 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+    /**
+     * 用户催单
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+        Orders order = orderMapper.getById(id);
+        if(order == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 2);//2表示用户催单
+        map.put("orderId", id);
+        map.put("content", "订单号: " + order.getNumber());
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
+
 
     /**
      * 将Orders转化为OrderVO
      * @param page
      * @return
      */
-    public List<OrderVO> getOrderVOList(Page<Orders> page) {
+    private List<OrderVO> getOrderVOList(Page<Orders> page) {
         // 需要返回订单菜品信息，自定义OrderVO响应结果
         List<OrderVO> orderVOList = new ArrayList<>();
 
