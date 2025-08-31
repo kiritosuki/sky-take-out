@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Mapper
@@ -91,4 +92,11 @@ public interface DishMapper {
      */
     @Select("select * from dish where dish.id = #{id}")
     Dish getById(Long id);
+
+    /**
+     * 根据条件统计菜品数量
+     * @param map
+     * @return
+     */
+    Integer countByMap(HashMap<String, Object> map);
 }
